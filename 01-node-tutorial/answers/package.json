@@ -1,0 +1,17 @@
+{
+  "name": "answers",
+  "version": "1.0.0",
+  "main": "1-intro.js",
+  "scripts": {  
+    "test": "echo \"Error: no test specified\" && exit 1",  
+    "dev": "nodemon customEmitter.js",  
+    "start": "node customEmitter.js"  
+  },  
+
+  "author": "Mariia Domarkas",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
