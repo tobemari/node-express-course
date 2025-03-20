@@ -1,4 +1,6 @@
+const { write, writeFileSync } = require("fs");
 const http = require("http");
+const fs = require("fs");
 var StringDecoder = require("string_decoder").StringDecoder;
 
 const getBody = (req, callback) => {
@@ -20,21 +22,51 @@ const getBody = (req, callback) => {
   });
 };
 
-// here, you could declare one or more variables to store what comes back from the form.
-let item = "Enter something below.";
+
+
 
 // here, you can change the form below to modify the input fields and what is displayed.
 // This is just ordinary html with string interpolation.
 const form = () => {
   return `
-  <body>
+  <body style="background-color: ${color};">
   <p>${item}</p>
   <form method="POST">
-  <input name="item"></input>
+  <input name="item" placeholder="Enter text"></input>
+  <input name="color" type="text" placeholder="Enter color (e.g., red, #ff0000)"></input>
   <button type="submit">Submit</button>
   </form>
+
+  <script>
+    document.body.style.backgroundColor = "${color}";
+   </script>
   </body>
   `;
+};
+
+// here, you could declare one or more variables to store what comes back from the form.
+let item = "Enter color below.";
+let color = "#ffffff"
+
+let saveInput = (data) => {
+  let dataToSave = `Item: ${data.item}\n`
+
+  fs.readFile('./formData.txt', 'utf8', (err, existingData) => {
+    if (err && err.code !== 'ENOENT') {
+      console.error("Error reading file:", err);
+      return;
+    }
+
+    const updatedData = (existingData || '') + dataToSave;
+
+    fs.writeFile('./temporary/formData.txt', updatedData, 'utf8', (err) => {
+      if (err) {
+        console.error("Error writing to file:", err);
+      } else {
+        console.log("Data saved successfully.");
+      }
+    });
+  });
 };
 
 const server = http.createServer((req, res) => {
@@ -42,6 +74,11 @@ const server = http.createServer((req, res) => {
   console.log("req.url is ", req.url);
   if (req.method === "POST") {
     getBody(req, (body) => {
+      item = body["item"] || "Nothing was entered.";
+      color = body["color"] || "#ffffff";
+
+      saveInput(body);
+
       console.log("The body of the post is ", body);
       // here, you can add your own logic
       if (body["item"]) {
