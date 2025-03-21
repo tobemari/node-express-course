@@ -1,7 +1,12 @@
 
 const { readFileSync, writeFileSync } = require('fs')
 
-for (let i = 0; i < 3; i++) {
+writeFileSync(
+    './temporary/fileA.txt',
+    `This is line 1\n`,
+)
+
+for (let i = 1; i < 3; i++) {
     writeFileSync(
         './temporary/fileA.txt',
         `This is line ${i + 1}\n`,
@@ -9,4 +14,4 @@ for (let i = 0; i < 3; i++) {
     )
 }
 
-console.log(readFileSync('./temporary/fileA.txt', 'utf8')); 
+console.log(readFileSync('./temporary/fileA.txt', 'utf8')); ``
