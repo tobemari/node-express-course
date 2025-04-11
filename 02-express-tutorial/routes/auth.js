@@ -1,12 +1,10 @@
-const express = require('express')
-const router = express.Router()
-
-router.post('/', (req, res)=>{
-    const {name} = req.body;
-    if(name){
-        return res.status(200).send(`Welcome ${name}`)
+const auth = ((req, res, next) => {
+    const name = req.cookies.name
+    if(!name){
+        return res.status(401).json({message: "unauthorized"})
     }
-    res.status(401).send('Please provide credentials')
+    req.user = name
+    next()
 })
 
-module.exports = router
+module.exports = auth
