@@ -1,19 +1,21 @@
 const express = require('express')
 const app = express()
-const { products } = require("./data");
+const { products, people } = require('./data');
+const peopleRouter = require('./routes/people')
+const logger = require('./logger')
 
-app.use(express.static('./public'))
+app.use(express.static('./methods-public'))
+app.use(logger)
+app.use(express.urlencoded({ extended: false }))
+app.use(express.json())
+app.use('/api/v1/people', peopleRouter)
 
 app.get('/about', (req,res)=>{
     res.status(200).send("<h1>This is About Page</h1>")
 })
 
-app.get('/api/v1/test', (req,res)=>{
-    res.json({ message: "It worked!" });
-})
-
-app.get('/api/v1/products', (req, res)=>{
-    res.json(products)
+app.get('/api/v1/products', (req, res)=>{ 
+    res.status(200).json(products)
 })
 
 app.get('/api/v1/products/:productID', (req, res)=>{
@@ -27,16 +29,16 @@ app.get('/api/v1/products/:productID', (req, res)=>{
 
 app.get('/api/v1/query', (req,res)=>{
     let sortedProducts = [...products]
-    const {search, min, max, limit} = req.query
+    const {search, minPrice, maxPrice, limit} = req.query
     if(search){
         sortedProducts = sortedProducts.filter((product)=>{
             return product.name.startsWith(search)
         })
     }
-    if(min, max){
+    if(minPrice || maxPrice){
         sortedProducts = sortedProducts.filter((product)=>{
-            const meetsMin = min ? product.price >= parseFloat(min) : true;
-            const meetsMax = max ? product.price <= parseFloat(max) : true;
+            const meetsMin = minPrice ? product.price >= parseFloat(minPrice) : true;
+            const meetsMax = maxPrice ? product.price <= parseFloat(maxPrice) : true;
             return  meetsMin && meetsMax
         })
     }
@@ -53,9 +55,6 @@ app.all('*', (req,res)=>{
     res.status(404).send("<h1>Page not Found</h1>")
 })
 
-// app.post()
-
 app.listen(3000, ()=>{
     console.log('server is listening on port 3000...');
-    
 })
